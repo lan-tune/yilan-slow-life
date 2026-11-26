@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎶 我們的蘭調食光 | 🌧 望著龜山島的雨日慢活</title>
+  <meta name="description" content="我們的蘭調食光｜專屬於宜蘭的雨日慢活散步地圖！收錄頭城、礁溪、宜蘭市、羅東、冬山、蘇澳超過百間在地早午餐、道地小吃、咖啡甜點與手搖茶飲，點擊抽取你的今日靈魂去處。" />
+  <link rel="preconnect" href="https://googleapis.com" />
+  <link rel="preconnect" href="https://gstatic.com" crossorigin />
+  <link href="https://googleapis.com" rel="stylesheet" />
+  <style>
+    :root {
+      --c-green: #4F8A65; --c-green-dark: #3B6B4D; --c-green-soft: #EDF5F0;
+      --c-yellow: #F3E285; --c-blue: #6E8EB2;
+      --c-orange: #E59838; --c-red: #C45235; --bg-paper: #F9F7F2;
+      --card-white: #FFFFFF; --text-ink: #2F3632; --text-muted: #666E69;
+      --border-soft: #E5E0D5; --shadow-soft: 0 6px 20px rgba(47, 54, 50, 0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: var(--bg-paper);
+      background-image: radial-gradient(#E3DDD1 0.75px, transparent 0.75px);
+      background-size: 20px 20px;
+      color: var(--text-ink);
+      line-height: 1.7;
+    }
+    header {
+      background: linear-gradient(165deg, #6A8CB0 0%, #5B8396 55%, #55896B 100%);
+      color: #FFFFFF; text-align: center;
+      padding: 3.25rem 1.25rem 4.25rem;
+      border-bottom-left-radius: 36px; border-bottom-right-radius: 36px;
+      box-shadow: 0 8px 24px rgba(106, 140, 176, 0.22);
+    }
+    /* 大頭照：手繪墨線龜山島輪廓再製，光暈柔和 */
+    .turtle-avatar {
+      width: 108px; height: 108px; border-radius: 50%;
+      background: #FCF9F2;
+      box-shadow: 5px 6px 16px rgba(252, 246, 223, 0.48), 2px 3px 6px rgba(47, 79, 62, 0.18);
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 0.95rem;
+      overflow: hidden;
+    }
+    header h1 { font-family: 'Noto Serif TC', serif; font-size: 2rem; letter-spacing: 0.12em; margin-bottom: 0.65rem; }
+    .hero-badge {
+      display: inline-block; background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.45); padding: 0.35rem 1.1rem;
+      border-radius: 999px; font-size: 0.9rem; margin-bottom: 1rem;
+    }
+    header p { max-width: 500px; margin: 0 auto; font-size: 0.94rem; }
+    main { max-width: 820px; margin: -2rem auto 3.5rem; padding: 0 1rem; display: flex; flex-direction: column; gap: 2rem; }
+    .section-card {
+      background: var(--card-white); border-radius: 24px;
+      padding: 1.85rem 1.5rem; box-shadow: var(--shadow-soft); border: 1.5px solid var(--border-soft);
+    }
+    .section-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .section-title { font-family: 'Noto Serif TC', serif; font-size: 1.35rem; color: var(--text-ink); }
+    .step-pill {
+      background: #FDF5E8; color: var(--c-red); border: 1px solid rgba(196, 82, 53, 0.28);
+      font-size: 0.78rem; font-weight: 700; padding: 0.22rem 0.75rem; border-radius: 999px;
+    }
+    .section-desc { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 1.35rem; }
+    .accordion-list { display: flex; flex-direction: column; gap: 0.85rem; }
+    .accordion-item { border: 1.5px solid var(--border-soft); border-radius: 16px; overflow: hidden; background: #FFFFFF; transition: all 0.25s ease; }
+    .accordion-item.active { border-color: var(--c-orange); box-shadow: 0 6px 18px rgba(229, 152, 56, 0.14); }
+    .accordion-trigger {
+      width: 100%; background: #FFFFFF; border: none; padding: 1.05rem 1.2rem;
+      text-align: left; font-family: inherit; font-size: 0.98rem; font-weight: 700;
+      color: var(--text-ink); display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+    }
+    .accordion-trigger:hover { background: #FAF8F3; }
+    .accordion-item.active .accordion-trigger { background: #FFF9EE; color: var(--c-red); }
+    .accordion-arrow { transition: transform 0.3s ease; font-size: 0.9rem; color: var(--c-orange); }
+    .accordion-item.active .accordion-arrow { transform: rotate(180deg); }
+    .accordion-content { display: none; padding: 1.2rem; background: #FFFCF7; border-top: 1px dashed #E8DFC8; }
+    .accordion-item.active .accordion-content { display: block; }
+    .bgm-box { background: #F2F6FA; border-left: 4px solid var(--c-blue); padding: 0.55rem 0.85rem; border-radius: 8px; margin-bottom: 0.75rem; }
+    .bgm-title { font-weight: 700; color: #466891; font-size: 0.92rem; }
+    .song-note { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.9rem; }
+    .pair-box { background: #FFFFFF; border: 1.5px solid #EFE9D8; border-radius: 14px; padding: 0.9rem 1.05rem; margin-bottom: 1rem; }
+    .pair-box-title { font-size: 0.84rem; font-weight: 700; color: var(--c-green); margin-bottom: 0.45rem; }
+    .pair-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.96rem; font-weight: 500; }
+    .pair-list li::before { content: "📍 "; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;
+      padding: 0.52rem 1rem; border-radius: 999px; font-size: 0.85rem;
+      font-weight: 700; cursor: pointer; text-decoration: none; border: none; font-family: inherit;
+    }
+    .btn-orange { background: var(--c-orange); color: #FFFFFF; }
+    .btn-outline { background: #FFFFFF; color: var(--c-green); border: 1.5px solid var(--c-green); }
+    .btn-primary { background: var(--c-green); color: #FFFFFF; padding: 0.82rem 1.6rem; font-size: 0.96rem; box-shadow: 0 4px 12px rgba(79, 138, 101, 0.25); }
+    .btn-primary:hover { background: var(--c-green-dark); }
+    .blindbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.95rem; }
+    @media (min-width: 640px) { .blindbox-grid { grid-template-columns: repeat(4, 1fr); } }
+    .flip-card { background: transparent; height: 215px; perspective: 1000px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.55s; transform-style: preserve-3d; }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+      border-radius: 18px; padding: 1.05rem 0.8rem;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+    }
+    .flip-front { background: linear-gradient(180deg, #FBF9F4 0%, #F3EFE6 100%); border: 1.5px solid #DFD8C8; }
+    .flip-front:hover { border-color: var(--c-blue); background: #F4F7FA; }
+    .cat-badge { font-size: 0.96rem; font-weight: 700; color: var(--text-ink); margin-bottom: 0.65rem; }
+    .tap-hint { font-size: 0.78rem; color: #5E521C; background: #F5E693; padding: 0.26rem 0.85rem; border-radius: 999px; font-weight: 700; }
+    .flip-back {
+      background: #F6F8FA; color: var(--text-ink); border: 2px solid var(--c-blue);
+      box-shadow: 0 6px 16px rgba(110, 142, 178, 0.16); transform: rotateY(180deg); justify-content: space-between;
+    }
+    .back-cat-pill { font-size: 0.73rem; font-weight: 700; color: #4A6B8C; background: #E3ECF5; padding: 0.18rem 0.65rem; border-radius: 999px; }
+    .spot-name { font-family: 'Noto Serif TC', serif; font-size: 0.98rem; font-weight: 700; color: #263830; margin-top: 0.25rem; line-height: 1.38; }
+    .spot-desc { font-size: 0.78rem; color: var(--c-green); font-weight: 700; margin-top: 0.25rem; }
+    .card-actions { display: flex; gap: 0.45rem; width: 100%; justify-content: center; }
+    .mini-btn { font-size: 0.75rem; padding: 0.36rem 0.65rem; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: inherit; }
+    .mini-btn-reroll { background: #FFFFFF; color: #546A7B; border: 1.5px solid #C5D3E0; }
+    .mini-btn-map { background: var(--c-orange); color: #FFFFFF; border: 1.5px solid var(--c-orange); }
+    .seasonal-tip {
+      background: #FAF8F2; border: 1px dashed #B5CEBE; color: #466953;
+      font-size: 0.83rem; padding: 0.55rem 0.9rem; border-radius: 12px;
+      margin-bottom: 1rem; display: flex; align-items: center; gap: 0.45rem;
+    }
+    #map-section .section-title { color: var(--c-green-dark); }
+    #map-section .step-pill { background: var(--c-green-soft); color: var(--c-green-dark); border: 1px solid rgba(79, 138, 101, 0.35); }
+    #map-section .section-desc { color: #52735E; margin-bottom: 0.85rem; }
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1.1rem; }
+    .map-tag { font-size: 0.8rem; background: var(--c-green-soft); color: var(--c-green-dark); border: 1px solid rgba(79, 138, 101, 0.35); padding: 0.24rem 0.7rem; border-radius: 8px; font-weight: 500; }
+    .map-wrapper { width: 100%; height: 440px; border-radius: 18px; overflow: hidden; border: 2px solid var(--c-green); margin-bottom: 0.85rem; background: var(--c-green-soft); }
+    .map-wrapper iframe { width: 100%; height: 100%; border: 0; }
+    .map-fallback-hint { font-size: 0.8rem; color: #52735E; text-align: center; margin-bottom: 1.1rem; }
+    .map-footer-action { text-align: center; }
+    footer { text-align: center; padding: 1.5rem 1rem 3rem; color: var(--text-muted); font-size: 0.88rem; }
+    .footer-motto { font-family: 'Noto Serif TC', serif; color: var(--c-red); font-weight: 700; margin-top: 0.35rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="turtle-avatar" title="望著龜山島的雨日慢活">
+      <!-- 依照你上傳的手繪線條輪廓再製的向量龜山島圖示 -->
+      <svg width="108" height="108" viewBox="0 0 120 120" fill="none" xmlns="http://w3.org">
+        <defs>
+          <clipPath id="avatar-clip">
+            <circle cx="60" cy="60" r="56"/>
+          </clipPath>
+        </defs>
+        <g clip-path="url(#avatar-clip)">
+          <!-- 溫潤宣紙白底 -->
+          <rect x="0" y="0" width="120" height="120" fill="#FCF9F2"/>
+          
+          <!-- 龜山島主體外輪廓（左起龜尾沙洲 -> 龜甲主峰 -> 鞍部 -> 右側龜首） -->
+          <path d="M11 63 C14 57, 19 57, 23 59 C27 61, 31 53, 39 48 C48 42, 57 38, 63 38 C68 38, 75 46, 82 52 C88 57, 93 57, 98 52 C101 49, 104 51, 106 57 C107 62, 109 66, 111 69" 
+                stroke="#232725" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          
+          <!-- 手繪山脊紋理與細膩植披筆觸（還原原圖的素描線條感） -->
+          <!-- 左側龜甲坡面紋理 -->
+          <path d="M36 53 C38 56, 37 60, 39 63 M41 49 C43 54, 42 61, 44 66 M46 46 C49 52, 47 62, 50 68 M51 44 C53 50, 52 58, 54 64 M56 42 C57 47, 57 52, 58 57" 
+                stroke="#2F3632" stroke-width="1.15" stroke-linecap="round" stroke-dasharray="2 3 4 2"/>
+          <!-- 中央山腹素描短線 -->
+          <path d="M44 57 L46 61 M48 53 L49 57 M53 50 L54 54 M66 46 C68 50, 69 55, 71 59 M70 49 C73 54, 74 59, 76 63 M75 53 L78 58" 
+                stroke="#2F3632" stroke-width="1.05" stroke-linecap="round"/>
+          <!-- 右側鞍部與龜首密集植披線條 -->
+          <path d="M81 56 C83 59, 85 62, 88 64 M85 57 C88 60, 91 63, 94 65 M97 54 C98 59, 98 64, 100 68 M100 53 C102 58, 102 64, 105 69 M103 55 C105 60, 106 65, 108 69" 
+                stroke="#232725" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="1.5 2 3 1.5"/>
+          <!-- 龜首下方岩石肌理點描 -->
+          <path d="M95 62 L97 65 M101 61 L103 65 M104 64 L107 67 M91 66 L95 67 M103 69 L109 70" 
+                stroke="#232725" stroke-width="1.1" stroke-linecap="round"/>
+
+          <!-- 呼應原圖排版的精緻標題文字 -->
+          <text x="60" y="83" text-anchor="middle" font-family="'Noto Serif TC', serif" font-size="8.2" font-weight="700" letter-spacing="1.8" fill="#1F2421">我們的蘭調食光</text>
+          <text x="60" y="92" text-anchor="middle" font-family="'Noto Sans TC', sans-serif" font-size="3.6" letter-spacing="0.6" fill="#5C635F">Exploring Yilan City · SINCE 2025</text>
+        </g>
+        <!-- 外框細線 -->
+        <circle cx="60" cy="60" r="56" stroke="#3A664B" stroke-width="2.2"/>
+      </svg>
+    </div>
+
+    <h1>我們的蘭調食光</h1>
+    <div class="hero-badge">🌧 望著龜山島的雨日慢活・跟著雨聲去漫步</div>
+    <p>伴隨著蘭陽平原的細雨與天光，串連宜蘭在地生活據點，<br>開啟屬於你的雨日散步地圖！</p>
+  </header>
+
+  <main>
+    <section class="section-card" id="step1">
+      <div class="section-header">
+        <h2 class="section-title">🎧 今日蘭調點唱機</h2>
+        <span class="step-pill">✨ 第一步・選雨調</span>
+      </div>
+      <p class="section-desc">點擊開啟此刻的天氣與心情節奏，為你隨機點播 2 個不同角落的探索去處：</p>
+      <div class="accordion-list" id="jukebox-container"></div>
+    </section>
+
+    <section class="section-card" id="step2">
+      <div class="section-header">
+        <h2 class="section-title">🎲 蘭調冒險挑戰籤</h2>
+        <span class="step-pill">✨ 第二步・點擊翻牌</span>
+      </div>
+      <p class="section-desc">點擊翻開一張蘭調小籤，看看今天會與哪個生活角落不期而遇：</p>
+      <div class="blindbox-grid" id="blindbox-container"></div>
+    </section>
+
+    <section class="section-card" id="map-section">
+      <div class="section-header">
+        <h2 class="section-title">🐢 蘭調食光・在地生活地圖</h2>
+        <span class="step-pill">✨ 第三步・出發去</span>
+      </div>
+      <p class="section-desc">匯集宜蘭 10 大類生活與休憩據點，直接滑動探索或點擊放大導航：</p>
+
+      <div class="seasonal-tip">
+        <span>🌦</span>
+        <span>宜蘭小店常隨季節與天氣調整營業，出發前建議點擊導航確認最新動態唷！</span>
+      </div>
+
+      <div class="tag-cloud">
+        <span class="map-tag">🌅 01 早午餐</span>
+        <span class="map-tag">🍜 02 道地小吃</span>
+        <span class="map-tag">☕ 03 咖啡。甜點</span>
+        <span class="map-tag">🍙 04 輕食小物</span>
+        <span class="map-tag">🍰 05 午茶。點心</span>
+        <span class="map-tag">🍱 06 多元料理</span>
+        <span class="map-tag">🥤 07 手搖茶飲</span>
+        <span class="map-tag">🌿 08 慢活哲學</span>
+        <span class="map-tag">🛠️ 09 職人行家</span>
+        <span class="map-tag">🤝 10 友善商行</span>
+      </div>
+
+      <div class="map-wrapper">
+        <iframe
+          id="yilan-map-iframe"
+          title="我們的蘭調食光 宜蘭生活漫步地圖"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+      <div class="map-fallback-hint">※ 若於本機或特定預覽框受限，請直接點擊下方按鈕開啟全螢幕地圖</div>
+
+      <div class="map-footer-action">
+        <button
+          type="button"
+          onclick="openFullMap()"
+          class="btn btn-primary">
+          📍 全螢幕開啟 Google 地圖導航 ↗
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>🎶 我們的蘭調食光</div>
+    <div class="footer-motto">╭* 🌙 不用擔心雨會不會下到明天早上，因為宵夜吃太多也是會變胖 🍜 *╮</div>
+  </footer>
+  <script>
+    const blindboxData = Array.of(
+      {
+        category: "🌅 早午餐",
+        items: Array.of(
+          "頭城早餐店 // 頭城鎮", "早安。呷飽未 // 頭城鎮", "奶呼呼 Breakfast // 礁溪鄉",
+          "漢林早餐店 // 礁溪鄉", "洋洋吐司 // 宜蘭市", "初晨之食早午餐 // 宜蘭市",
+          "巷弄裡的健康早午餐 // 宜蘭市", "市場內壓磚奶酥早午餐店 // 宜蘭市", "蒙福早點 // 宜蘭市",
+          "朝食堂 // 宜蘭市", "小巷時光 // 宜蘭市",
+          "起來重睡 // 宜蘭市", "笑嗨嗨早餐店 // 宜蘭市", "艸弓計劃 // 宜蘭市",
+          "晨粹早午餐 // 宜蘭市", "立歐廚房 Leoś cafe // 宜蘭市", "Q Burger // 宜蘭市",
+          "TOASTMAN 吐司男 // 宜蘭市", "大叔老闆早午餐 // 宜蘭市", "康田灶豐 // 宜蘭市",
+          "日十。早午食 // 宜蘭市", "光森早堂 // 宜蘭市", "Chill~好呷 嘟嘟車 早餐 // 壯圍鄉",
+          "蒔夏早午餐 // 宜蘭市", "巨林美而美 // 五結鄉", "品味早點 // 羅東鎮",
+          "微暖米朵早午餐 // 羅東鎮", "貳貳壹零複合式宵夜 早午餐 // 羅東鎮", "麥町吐司工房 // 羅東鎮",
+          "好想吃早餐 // 羅東鎮", "碳烤夯堡 // 羅東鎮", "橘子樹早餐訂餐 // 羅東鎮",
+          "立早餐 // 羅東鎮", "日十。早午餐 // 羅東鎮", "貳玖巷早午餐 // 羅東鎮",
+          "廣興大漢堡 // 冬山鄉", "煦米日和 xumi // 冬山鄉", "早胃子 // 冬山鄉",
+          "晨儒食光 // 冬山鄉", "干丹早餐 // 冬山鄉", "巷仔口早點 // 蘇澳鎮"
+        )
+      },
+      {
+        category: "🍜 道地小吃",
+        items: Array.of(
+          "流氓滷肉飯 // 流動餐車", "雙生餃餃 // 頭城鎮", "越南小吃 // 頭城鎮",
+          "夜煎部小食堂 // 礁溪鄉", "玖食雞湯小卷米粉 // 礁溪鄉",
+          "義眾魚羹之家 // 礁溪鄉", "龍潭 信麵店 // 礁溪鄉", "帝龍食補薑母鴨 // 宜蘭市",
+          "饗喫溫體牛肉湯 // 宜蘭市", "巧宴蒜香肉羹 // 宜蘭市", "元爵味黃燜雞米飯 // 宜蘭市",
+          "奧松割包肉捲 // 宜蘭市", "六六方鴛鴦鍋 // 宜蘭市", "小正太酸菜魚 // 宜蘭市",
+          "輕鬆生活啡茶室 // 宜蘭市", "沙仔瓦。麵x小料理 // 宜蘭市", "福湯麻辣養生鴛鴦火鍋 // 宜蘭市",
+          "三媽臭臭鍋東港店 // 宜蘭市", "囍慶油飯 // 宜蘭市", "鳳記燒臘便當 // 宜蘭市",
+          "谷碳good time日式串燒店 // 宜蘭市", "富美海鮮火鍋 // 宜蘭市", "五花馬水餃館 // 宜蘭市",
+          "SELFree纖活餐盒 // 宜蘭市", "老媽米粉羹．滷肉飯 // 宜蘭市", "宵夜●一碗飯 // 宜蘭市",
+          "泰蝦啦/泰國蝦料理 // 宜蘭市", "再一碗 // 宜蘭市", "程師傅滷味 // 壯圍鄉",
+          "農權路炸醬麵 // 宜蘭市", "在辣邊川蜀麻辣滷味 // 宜蘭市", "咔必娜炸雞弁當 // 宜蘭市",
+          "享米飯堂 // 宜蘭市", "海之霸 // 宜蘭市", "絡繹不絕 // 宜蘭市",
+          "J哥麵Damn // 宜蘭市", "森飽火鍋 // 宜蘭市", "程師傅滷味 // 宜蘭市",
+          "擺厘香辣乾麵 // 宜蘭市", "餇螺灣螺螄粉小吃店 // 宜蘭市", "中華一燔燒臘便當 // 羅東鎮",
+          "胖嘟嘟燒肉飯 // 羅東鎮", "売鍋 // 羅東鎮", "麻二記市井火鍋 // 羅東鎮",
+          "宵夜●一碗飯 // 羅東鎮", "云品鍋物 SHABU SHABU // 羅東鎮", "環食麵所 // 羅東鎮",
+          "五花馬水餃館 // 羅東鎮", "良食樂蒸烤手作餐盒 // 羅東鎮",
+          "一盞湯燈 // 羅東鎮", "三媽臭臭鍋（羅東夜市附近） // 羅東鎮", "周仔肉圓 // 羅東鎮",
+          "太祖魷魚羹 // 冬山鄉", "포차차 Pochacha // 冬山鄉", "貞貞香食堂 // 五結鄉",
+          "全嘉灶咖（冷凍食品團購） // 冬山鄉", "熊飽MINI平價鍋物 // 冬山鄉",
+          "三號麵館 Noodles Bar // 蘇澳鎮", "小味園快餐燒臘 // 蘇澳鎮",
+          "馨香園港式燒臘 // 蘇澳鎮", "小黃牛肉麵 // 蘇澳鎮"
+        )
+      },
+      {
+        category: "☕ 咖啡。甜點",
+        items: Array.of(
+          "滿山望海 // 頭城鎮", "美娥姐甜點店 // 頭城鎮", "Calmhere Caffe // 礁溪鄉",
+          "RuRu手作坊（漉樚手作坊） // 頭城鎮", "寵物空間-DOG.SPACE.Coffee // 礁溪鄉",
+          "農情味焦糖布丁 // 礁溪鄉", "薯光甜點廚房 // 礁溪鄉", "短短你好 手工餅乾 // 壯圍鄉",
+          "超品起司烘焙工坊 // 宜蘭市", "藏甜手作坊 // 壯圍鄉", "春雨粮甜 // 宜蘭市",
+          "艾熙甜點Oi-Siit Dessert // 宜蘭市", "匕匕泡芙專賣店 // 宜蘭市", "6M COFFEE // 宜蘭市",
+          "92度半咖啡-宜蘭北館號 // 宜蘭市", "內巷 // 宜蘭市", "初歆Canelé // 宜蘭市",
+          "溫生甜科 // 宜蘭市", "Hikouki Café Bar // 宜蘭市", "賴可這一家 // 宜蘭市",
+          "梅森咖啡 MASON CAFE // 宜蘭市", "米味盒子複合式餐飲&臻手作 // 宜蘭市",
+          "散步 Cafe Sanpo // 宜蘭市", "Twenty two // 壯圍鄉", "植享咖啡 // 宜蘭市",
+          "PunnyCake（宜大體育館側門）// 宜蘭市", "貓宅 // 宜蘭市", "官官甜點製造所 // 宜蘭市",
+          "COFFEE SIGMA // 宜蘭市", "見野Niwa // 員山鄉", "Simply Pâtisserie (日生手作) // 員山鄉",
+          "咖啡大叔 // 網路商店", "茹菓甜點室 // 羅東鎮", "伍貳菓子 // 羅東鎮",
+          "參宿咖啡所 // 羅東鎮", "福禧進烘焙 // 羅東鎮", "佬家咖啡 // 羅東鎮",
+          "野禾咖啡 // 五結鄉", "貓咖飛 CatCafe // 羅東鎮", "沐吉手作工坊（羅東取貨點）// 羅東鎮",
+          "蝦胖咖啡社 // 羅東鎮", "雙樹咖啡 // 羅東鎮", "喬伊小姐客製蛋糕 // 羅東鎮",
+          "美美子みみこ homemade cake // 羅東鎮", "大海旁邊 甜點工作室 // 羅東鎮",
+          "我朋友的烘焙坊 // 羅東鎮", "鎂知心 cake // 冬山鄉", "義益咖啡 Esoulcafe // 大同鄉",
+          "羽菓茶寮 // 三星鄉", "胖豹甜點 Chubby Seal Dessert // 冬山鄉", "熊甜宅 // 冬山鄉"
+        )
+      },
+      {
+        category: "🍙 輕食小物",
+        items: Array.of(
+          "Amaze兔子迷宮~礁溪浴場 // 礁溪鄉", "披薩方城市（外帶店）// 宜蘭市", "小木屋鬆餅 // 宜蘭市",
+          "三角窗可麗餅 // 礁溪鄉", "英俊越式烤餅 // 宜蘭市", "拾光荏苒〈可頌帕里尼專賣店〉 // 宜蘭市",
+          "Pain de KAI 可為烘焙 // 宜蘭市", "沐吉手作工坊（宜蘭取貨點）// 宜蘭市", "勁愛呷 // 宜蘭市",
+          "尚晴蔥油抓餅．炒麵飽堡 // 宜蘭市", "沐暮沙拉MUMU // 宜蘭市", "咿比芽芽-煎餅果子 // 宜蘭市",
+          "迪斯奈西點麵包 // 宜蘭市", "Florger漢堡花市 // 宜蘭市", "和十 Heshi // 宜蘭市",
+          "披薩方城市 Urban Pizza // 五結鄉", "麥點新手作烘焙坊 // 羅東鎮",
+          "懶壽司 // 羅東鎮", "籠餅舖小籠包蛋餅專賣店 // 羅東鎮"
+        )
+      },
+      {
+        category: "🍰 午茶。點心",
+        items: Array.of(
+          "富美香雞排 // 頭城鎮", "Hito石花凍 // 頭城鎮", "貓の圈圈甜品屋 // 礁溪鄉",
+          "烤研究所（礁溪分所）// 礁溪鄉", "汨食吉拿棒 // 流動餐車", "夕漫商行 // 礁溪鄉",
+          "赤日涼室 // 宜蘭市", "炭炭吐司屋 // 宜蘭市", "烤研究所（東門分所）// 宜蘭市",
+          "源炙坊 串燒雞排 // 宜蘭市", "阿啾喜炸雞 // 宜蘭市", "泉哥QQ蛋 // 宜蘭市",
+          "汗鴨子麻辣鴨血臭豆腐王 // 宜蘭市", "Q比醬地瓜球 // 宜蘭市", "吃吧《原蘭技老爹醬汁雞排》 // 宜蘭市",
+          "三臻鹽酥蒸烤 // 宜蘭市", "圓之緣紅豆餅 // 宜蘭市", "呼辣圈 // 宜蘭市",
+          "脆炸小宇宙-甜甜圈 // 宜蘭市", "胖老爹美式炸雞 // 壯圍鄉",
+          "悠呼豆花UUUHOO // 宜蘭市", "滷小小加熱滷味 // 宜蘭市", "老饕燒仙草紅豆湯圓 // 宜蘭市",
+          "丹丹蔥油餅 // 宜蘭市", "蒜真蒜香豆干 // 宜蘭市", "食癒韓式雞蛋燒 // 宜蘭市",
+          "維縈家鄉碳烤雞排 - 宜大店 // 宜蘭市", "冰河宜蘭冰 // 宜蘭市", "嵩丸屋章魚燒 // 宜蘭市",
+          "時食甜也 // 宜蘭市", "甜蜜密爆餡雞蛋仔 // 宜蘭市", "啊娥香腸大腸糯米腸 // 宜蘭市",
+          "巷口雞蛋燒 // 五結鄉", "烤研究所（五結分所）// 五結鄉", "滷嬌椒麻辣燙 // 五結鄉",
+          "丸吶 // 流動餐車", "潮麻吉 // 羅東鎮", "臓燒雞蛋糕《器官交易所》 // 羅東鎮",
+          "老爹滷味 // 羅東鎮", "海山冰城 // 羅東鎮", "雞城特烤 // 羅東鎮",
+          "堂薯薯臭薯條 // 羅東鎮", "甜甜的朋友圈 // 羅東鎮", "豆粹豆花坊 // 羅東鎮",
+          "君品手作豆花 // 冬山鄉", "菲香烤雞 // 羅東鎮", "暖町車輪餅 // 冬山鄉",
+          "本田屳（ㄒㄧㄢ）商行 // 冬山鄉", "烤研究所 // 流動餐車", "圓滿堂-烤糰子專賣店 // 冬山鄉",
+          "一名雞人鹹水雞 // 冬山鄉", "冰菓實驗室 // 蘇澳鎮", "李記麵粉煎 // 蘇澳鎮"
+        )
+      },
+      {
+        category: "🍱 多元料理",
+        items: Array.of(
+          "小老闆海鮮料理 // 頭城鎮", "春蕊會館 // 頭城鎮", "花食間 生魚片 丼飯 // 頭城鎮",
+          "西江水坊 // 礁溪鄉", "橙心手作料理 // 礁溪鄉", "木木韓食堂 // 礁溪鄉",
+          "龍佳園景觀餐廳 // 礁溪鄉", "火焰夯鴨 // 宜蘭市", "芎城餐酒Town bistro // 宜蘭市",
+          "亦思亦食（私廚無菜單料理）// 宜蘭市", "鬥炙原味炙燒牛排 // 宜蘭市", "圓夢小食堂 // 宜蘭市",
+          "老頭家 // 宜蘭市", "福勝亭 // 宜蘭市", "宥鮮美式海鮮 // 宜蘭市",
+          "匙家 // 宜蘭市", "竹谷定食 // 宜蘭市", "九龍小吃部 // 宜蘭市",
+          "順食中平價熱炒餐廳 // 宜蘭市", "音樂廚房之麥迪遜 // 宜蘭市", "林家小館 // 宜蘭市",
+          "螃蟹屋和漢海鮮料理 // 宜蘭市", "威佬 威士忌會所 // 宜蘭市", "蝸牛慢慢走 // 宜蘭市",
+          "幸芙ㄨㄟˋ廚房 // 宜蘭市", "津吉餐酒館 // 宜蘭市", "DANA Restaurant | 刺蔥餐廳 // 宜蘭市",
+          "那一年 // 員山鄉", "六合海鮮 // 壯圍鄉", "宜蘭懶人露營 - 青青露營酒店 // 三星鄉",
+          "燈泡魚甜點工作室（請預定）// 五結鄉", "熊讚小館 // 羅東鎮", "拾壹和食WASHOKU // 羅東鎮",
+          "廣興農場 // 冬山鄉", "Maison迴家酒館 // 羅東鎮", "人妻的廚房 // 羅東鎮",
+          "ENCORE.TABLE｜安口餐桌 // 羅東鎮", "角隅-紙包原創餐廳 // 羅東鎮", "淬小料理 // 羅東鎮",
+          "A volte 3步5食 // 羅東鎮", "飲廊 Corridor // 羅東鎮", "OPPA韓國料理 // 羅東鎮",
+          "裕握壽司 // 羅東鎮", "哇烤。有貓。 // 羅東鎮", "威尼斯義大利麵工坊 // 羅東鎮",
+          "蘭煮漢 Yilan Cooking Guy // 羅東鎮", "伍厚牛排館 // 羅東鎮", "天牛私廚牛排 // 羅東鎮",
+          "鬥炙原味炙燒牛排 // 羅東鎮", "迴巢喫飯 Innest Kitchen & Bistro // 羅東鎮",
+          "妮初藜麥家常餐盒 // 羅東鎮", "簡捷餐桌C.C Eatery // 羅東鎮", "暮日 • Steak // 羅東鎮",
+          "盛揚屋日式丼飯專賣店 // 羅東鎮", "享一下創意料理 // 冬山鄉", "歸．覓 義式廚房 // 冬山鄉",
+          "醉雞弄 // 冬山鄉", "花愛現小酒館 // 冬山鄉", "千樂水產 // 冬山鄉",
+          "六張桌 // 冬山鄉", "叄三文化廚房 // 蘇澳鎮"
+        )
+      },
+      {
+        category: "🥤 手搖茶飲",
+        items: Array.of(
+          "就是茶米手搖飲 // 頭城鎮", "泰國恰恰泰式奶茶 // 礁溪鄉", "上宇林頂級茶飲 // 礁溪鄉",
+          "波壹bobaone // 礁溪鄉", "十丈波紅茶 // 宜蘭市", "丘森茶室 // 宜蘭市",
+          "叮哥茶飲 // 宜蘭市", "鮮奶紅了 // 宜蘭市", "森森樂 // 宜蘭市",
+          "金剛咖啡茶飲 // 宜蘭市", "上宇林頂級茶飲 // 宜蘭市", "沁茶悅 // 宜蘭市",
+          "MeowTea貓霸茶飲 // 宜蘭市", "清心福全中正店 // 五結鄉", "上宇林頂級茶飲 // 羅東鎮",
+          "牧奶奶 // 羅東鎮", "誠飲 // 羅東鎮"
+        )
+      },
+      {
+        category: "🌿 慢活哲學",
+        items: Array.of(
+          "愛覺整復推拿(預約制) // 員山鄉", "花草生活 floral&life // 宜蘭市",
+          "hoym 河沐工作室｜畫畫·空間 // 宜蘭市", "一貳山室｜場地租借 // 宜蘭市",
+          "Nephi 尼腓的家 // 五結鄉", "揪揪玩密室逃脫(預約制) // 羅東鎮",
+          "祈師父整復美學中心-羅東店 // 羅東鎮", "拾遺畫話 // 三星鄉", "家家美花藝店 // 蘇澳鎮"
+        )
+      }
+    );
+    // 透過陣列組合網域，徹底避免後台儲存時自動替換成 https://google.com
+    const G_ORIGIN = Array.of("ht", "tps:", "//", "www.", "goo", "gle.com").join("");
+
+    function getMapUrl() {
+      return G_ORIGIN + "/maps/d/embed?mid=1XS-5LT8UDF_59eK4qaSS1VacsQmDHhk&ehbc=2E312F&noprof=1";
+    }
+
+    function openFullMap() {
+      window.open(getMapUrl(), "_blank", "noopener,noreferrer");
+    }
+
+    // 網頁載入後立即自動掛載內嵌地圖
+    document.getElementById("yilan-map-iframe").src = getMapUrl();
+
+    const jukeboxData = Array.of(
+      {
+        mood: "🌦 蘭城太陽雨 × 邊走邊看天光的驚喜時刻",
+        bgm: "🎵 推薦 BGM：《Rainy Sunbeam》— 輕快木吉他與晨間鋼琴小品",
+        desc: "雨絲帶著陽光灑落蘭城街角，為你隨機點播了兩個散步去處：",
+        primaryCats: Array.of(0)
+      },
+      {
+        mood: "🌧 舊城毛毛細雨 × 想躲進屋簷下聽雨發呆",
+        bgm: "🎵 推薦 BGM：《雨宿りの午後》— 慵懶爵士鋼琴與黑膠雨聲",
+        desc: "撐傘漫步在濕潤的紅磚街巷，為你隨機點播了兩個歇腳站點：",
+        primaryCats: Array.of(2)
+      },
+      {
+        mood: "🌫 雪山山嵐霧雨 × 放慢腳步感受山林氣息",
+        bgm: "🎵 推薦 BGM：《霧の森の呼吸》— 大提琴獨奏與山林微風白噪音",
+        desc: "雲霧繚繞在山腳與田野之間，為你隨機點播了兩個靜謐站點：",
+        primaryCats: Array.of(7)
+      },
+      {
+        mood: "🌤 雨後龜山放晴 × 空氣清新想大步去探索",
+        bgm: "🎵 推薦 BGM：《晴れた日の散歩道》— 爽朗烏克麗麗與輕快木箱鼓",
+        desc: "洗淨塵埃後的蘭陽平原格外清晰，為你隨機點播了兩個漫遊站點：",
+        primaryCats: Array.of(1, 5)
+      }
+    );
+
+    function pickRandom(arr) {
+      return arr.at(Math.floor(Math.random() * arr.length));
+    }
+
+    function getPairForMood(idx) {
+      const moodObj = jukeboxData.at(idx);
+      const primaryPoolIndices = moodObj.primaryCats;
+      const chosenPrimaryCatIdx = pickRandom(primaryPoolIndices);
+      const spot1 = pickRandom(blindboxData.at(chosenPrimaryCatIdx).items);
+
+      const otherCatIndices = blindboxData
+        .map((_, i) => i)
+        .filter(i => !primaryPoolIndices.includes(i));
+      const chosenOtherCatIdx = pickRandom(otherCatIndices);
+      const spot2 = pickRandom(blindboxData.at(chosenOtherCatIdx).items);
+
+      return Array.of(spot1, spot2);
+    }
+
+    const jukeboxContainer = document.getElementById("jukebox-container");
+    const jukeboxCurrentPair = jukeboxData.map((_, idx) => getPairForMood(idx));
+
+    jukeboxData.forEach((item, idx) => {
+      const chosen = jukeboxCurrentPair.at(idx);
+      const div = document.createElement("div");
+      div.className = "accordion-item";
+      div.innerHTML = `
+        <button class="accordion-trigger" type="button">
+          <span>${item.mood}</span>
+          <span class="accordion-arrow">▾</span>
+        </button>
+        <div class="accordion-content">
+          <div class="bgm-box">
+            <div class="bgm-title">${item.bgm}</div>
+          </div>
+          <div class="song-note">${item.desc}</div>
+          <div class="pair-box">
+            <div class="pair-box-title">✨ 今日靈魂相遇：</div>
+            <ul class="pair-list" id="pair-list-${idx}">
+              <li>${chosen.at(0)}</li>
+              <li>${chosen.at(1)}</li>
+            </ul>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-orange" type="button" onclick="rerollJukebox(${idx})">🎲 換一組靈魂相遇處</button>
+            <button class="btn btn-outline" type="button" onclick="copyRoute(${idx}, this)">📋 複製步調分享</button>
+            <a href="#map-section" class="btn btn-outline">📍 查看地圖 ▾</a>
+          </div>
+        </div>
+      `;
+
+      div.querySelector(".accordion-trigger").addEventListener("click", () => {
+        const isCurrentlyActive = div.classList.contains("active");
+        document.querySelectorAll("#jukebox-container .accordion-item").forEach(el => {
+          el.classList.remove("active");
+        });
+        if (!isCurrentlyActive) {
+          div.classList.add("active");
+        }
+      });
+
+      jukeboxContainer.appendChild(div);
+    });
+
+    function rerollJukebox(idx) {
+      const chosen = getPairForMood(idx);
+      jukeboxCurrentPair.splice(idx, 1, chosen);
+      const ul = document.getElementById(`pair-list-${idx}`);
+      ul.innerHTML = `<li>${chosen.at(0)}</li><li>${chosen.at(1)}</li>`;
+    }
+
+    function copyRoute(idx, btnElement) {
+      const item = jukeboxData.at(idx);
+      const chosen = jukeboxCurrentPair.at(idx);
+      const shareText = "🎶 我們的蘭調食光｜今日雨日節奏\n"
+        + item.mood + "\n"
+        + item.bgm + "\n"
+        + "📍 第一站：" + chosen.at(0) + "\n"
+        + "📍 第二站：" + chosen.at(1) + "\n"
+        + "🗺️ 探索地圖：" + getMapUrl();
+      navigator.clipboard.writeText(shareText).then(() => {
+        const originalText = btnElement.textContent;
+        btnElement.textContent = "✅ 已複製步調！";
+        setTimeout(() => {
+          btnElement.textContent = originalText;
+        }, 2000);
+      });
+    }
+
+    const blindboxContainer = document.getElementById("blindbox-container");
+    const currentKeywords = new Array(blindboxData.length);
+
+    function parseSpot(rawText) {
+      const parts = rawText.split("//");
+      const name = parts.at(0).trim();
+      const areaText = parts.at(1) ? parts.at(1).trim() : "宜蘭";
+      const areaBadge = "📍 " + areaText;
+      const cleanName = name.replace(/（.*?）|\(.*?\)/g, "").trim();
+      const queryKeyword = areaText.includes("流動餐車") || areaText.includes("網路商店")
+        ? cleanName
+        : cleanName + " " + areaText;
+      return { name, areaBadge, queryKeyword };
+    }
+
+    function navToSpot(event, idx) {
+      event.stopPropagation();
+      const kw = currentKeywords.at(idx);
+      const searchUrl = G_ORIGIN + "/maps/search/?api=1&query=" + encodeURIComponent(kw);
+      window.open(searchUrl, "_blank", "noopener,noreferrer");
+    }
+
+    blindboxData.forEach((cat, idx) => {
+      const initRaw = pickRandom(cat.items);
+      const parsed = parseSpot(initRaw);
+      currentKeywords.splice(idx, 1, parsed.queryKeyword);
+
+      const card = document.createElement("div");
+      card.className = "flip-card";
+      card.innerHTML = `
+        <div class="flip-card-inner">
+          <div class="flip-front">
+            <div class="cat-badge">${cat.category}</div>
+            <div class="tap-hint">點擊翻牌 ✨</div>
+          </div>
+          <div class="flip-back">
+            <div class="back-cat-pill">${cat.category}</div>
+            <div>
+              <div class="spot-name" id="spot-name-${idx}">${parsed.name}</div>
+              <div class="spot-desc" id="spot-desc-${idx}">${parsed.areaBadge}</div>
+            </div>
+            <div class="card-actions">
+              <button class="mini-btn mini-btn-reroll" type="button" onclick="rerollBlindbox(event, ${idx})">🔄 下一籤</button>
+              <button class="mini-btn mini-btn-map" type="button" onclick="navToSpot(event, ${idx})">🗺️ 導航</button>
+            </div>
+          </div>
+        </div>
+      `;
+      card.addEventListener("click", () => {
+        card.classList.toggle("flipped");
+      });
+      blindboxContainer.appendChild(card);
+    });
+
+    function rerollBlindbox(event, idx) {
+      event.stopPropagation();
+      const pool = blindboxData.at(idx).items;
+      const nextRaw = pickRandom(pool);
+      const parsed = parseSpot(nextRaw);
+      currentKeywords.splice(idx, 1, parsed.queryKeyword);
+      document.getElementById(`spot-name-${idx}`).textContent = parsed.name;
+      document.getElementById(`spot-desc-${idx}`).textContent = parsed.areaBadge;
+    }
+  </script>
+</body>
+</html>
